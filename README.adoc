@@ -1,0 +1,161 @@
+# Debugging KeyCloak
+
+## Source Code
+
+1. Create a new "workspace" directory and open a terminal in that directory
++
+[NOTE]
+====
+For the duration of these instructions, we will refer to this workspace directory as `/home/dphillips/workspace`
+====
+1. git clone https://github.com/keycloak/keycloak.git
+1. Change to the keycloak source directory
+   * `cd keycloak`
+1. Check out the appropriate version
+   * `git checkout -b 9.0.3 9.0.3`
+     * This creates a new local branch `9.0.3` using the git tag `9.0.3`
+1. Download the corresponding version of KeyCloak/Red Hat SSO and extract it
+
+
+## CodeReady Studio
+
+1. Download Red Hat CodeReady Studio
+   * https://developers.redhat.com/products/codeready-studio/download[https://developers.redhat.com/products/codeready-studio/download]
++
+.CodeReady Studio Product Page
+[#img-product-page]
+image::images/CodeReadyProductPage.png[]
++
+1. Log in or create a Red Hat Developers account to complete the download
+1. Download the installer JAR file
+1. Execute the Installer JAR
+   * `java -jar /path/to/codeready.jar`
+1. Read the installer instructions and click "Next"
++
+image:images/Install_CodeReady_01.png[]
+1. Review the license agreement, select "I accept", and click "Next"
++
+image:images/Install_CodeReady_02.png[]
+1.  Update the installation path (OPTIONAL) and click "Next"
++
+image:images/Install_CodeReady_03.png[]
+1. Click "OK" to acknowledge the warning that a new directory will be created
++
+image:images/Install_CodeReady_04.png[]
+1. Either accept the default JVM or choose a specific JVM
++
+[NOTE]
+====
+The JVM **MUST** be Java 11 or later
+====
++
+image:images/Install_CodeReady_05.png[]
+1. Add the KeyCloak server instance to the list
++
+image:images/Install_CodeReady_06.png[]
+1. You can optionally include Red Hat Fuse Tooling
++
+image:images/Install_CodeReady_07.png[]
+1. Review the installation details and click "Next" to begin the installation
++
+image:images/Install_CodeReady_08.png[]
+1. The installation will take a few minutes
++
+image:images/Install_CodeReady_09.png[]
+1. Once the install is complete, click "Next"
++
+image:images/Install_CodeReady_10.png[]
+1. You may choose to have the installer create menu entries and then click "Next"
++
+image:images/Install_CodeReady_11.png[]
+1. Select "Run Red Hat CodeReady Studio after installation" and click "Next"
++
+image:images/Install_CodeReady_12.png[]
+
+## Import KeyCloak Maven Multi-Module Project
+
+1. As CodeReady Studio starts, select your workspace as determined at the beginning of these instructions
++
+image:images/Import_KeyCloak_Source_01.png[]
+1. Choose "Yes" or "No" to the prompt about usage statistics collection
++
+image:images/Import_KeyCloak_Source_04.png[]
+1. Select the "Servers" panel
++
+image:images/Import_KeyCloak_Source_05.png[]
+1. Click the link in the "Servers" panel to add a new Server
+   * Choose "Red Hat JBoss Enterprise Application Server 7.0.3"
+   * Set the server name to "keycloak"
++
+image:images/Import_KeyCloak_Source_06.png[]
+1. Accept the defaults for the server adapter and click "Next"
++
+image:images/Import_KeyCloak_Source_07.png[]
+1. In the "New Server" dialog:
+   * Set the "Name" to "KeyCloak"
+   * Browse to your KeyCloak server download (the binary package)
+   * Select the "Runtime JRE"
++
+image:images/Import_KeyCloak_Source_08.png[]
+1. On the "Add and Remove" dialog, click "Finish"
++
+image:images/Import_KeyCloak_Source_09.png[]
+1. In the "File" menu, select "Import"
++
+image:images/Import_KeyCloak_Source_10.png[]
+1. Under the "Maven" folder, select "Existing Maven Projects"
++
+image:images/Import_KeyCloak_Source_10a.png[]
+1. Browse to and select your KeyCloak source directory (e.g. /home/dphillips/workspace/keycloak), then click "Finish"
++
+image:images/Import_KeyCloak_Source_12.png[]
+1. Make note that there are background processes running, and double-click on that progress bar.
++
+image:images/Import_KeyCloak_Source_13.png[]
+1. You will see a series of processes running which can take a **VERY LONG TIME** and which must complete before we can proceed.
++
+image:images/Import_KeyCloak_Source_14.png[]
+1. You will see a dialog about unknown maven plugin connectors. Click "Auto Select" and then click "Finish"
++
+image:images/Import_KeyCloak_Source_15.png[]
+1. You may get a warning about incomplete maven goals but you can click "OK" to proceed.
++
+image:images/Import_KeyCloak_Source_16.png[]
+1. You might be prompted to install additional M2E Connectors for Eclipse, click "Next"
++
+image:images/Import_KeyCloak_Source_17.png[]
+1. You will then be shown the installation details for that M2E plugin. Click "Next"
++
+image:images/Import_KeyCloak_Source_18.png[]
+1. Accept the license agreement for the M2E connectors
++
+image:images/Import_KeyCloak_Source_19.png[]
+1. You may get a warning about unsigned software for the M2E Connectors, you can ignore it by clicking "Install Anyway"
++
+image:images/Import_KeyCloak_Source_20.png[]
+1. You will be prompted to restart the IDE to apply the new plugins. Click "No" and wait for the remaining background tasks to complete.
++
+image:images/Import_KeyCloak_Source_21.png[]
+1. Once all of the background tasks have completed, select "File" -> "Restart"
++
+image:images/Import_KeyCloak_Source_22.png[]
+
+## Running The Debugger & Setting Breakpoints
+1. Navigate to the "Servers" pane, select "KeyCloak", and then click the "Debug" button
++
+image:images/Debugging_KeyCloak_01.png[]
+1. Once the KeyCloak server is completely started, navigate in the project explorer to the `keycloak-services` module, to the `org.keycloak.forms.login.freemarker` package, and open the `FreeMarkerLoginFormsProvider` class.
++
+image:images/Debugging_KeyCloak_02.png[]
+1. Locate the "processTemplate" method
++
+image:images/Debugging_KeyCloak_03.png[]
+1. Set a breakpoint on the first line inside of the `try/catch` block
++
+image:images/Debugging_KeyCloak_04.png[]
+1. Open a browser and navigate to the keycloak server at http://localhost:8080/auth/realms/<realm>/<client>/, and you should expect to be prompted to switch to the Debugging perspective in your IDE
++
+image:images/Debugging_KeyCloak_05.png[]
+1. Now you can inspect the `this.attributes` field to see what is being passed to FreeMarker
++
+image:images/Debugging_KeyCloak_06.png[]
